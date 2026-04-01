@@ -11,7 +11,229 @@
     <title>College Saathi</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-    /*--todo--*/
+        :root {
+            --gold: #F5C200;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --error: #d93025;
+        }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loadingScreen {
+            min-height: 100vh;
+            width: 100%;
+            background: var(--gold);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px 60px;
+            gap: 0;
+        }
+        .cs-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 5vw, 60px);
+            font-weight: 900;
+            color: var(--black);
+            letter-spacing: 0.04em;
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .cs-subtitle {
+            font-family: 'Source Serif 4', serif;
+            font-size: clamp(11px, 1.3vw, 16px);
+            font-weight: 600;
+            color: var(--black);
+            letter-spacing: 0.18em;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .cs-version {
+            font-family: 'Source Serif 4', serif;
+            font-size: clamp(11px, 1.1vw, 13px);
+            color: var(--black);
+            text-decoration: underline;
+            text-align: center;
+            margin-bottom: 26px;
+            opacity: 0.75;
+        }
+        .quote-block {
+            width: min(90vw, 700px);
+            min-height: 20vh;
+            padding: clamp(12px, 2vw, 24px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(8px, 2vw, 16px);
+            text-align: center;
+        }
+        .quote-mark-open,
+        .quote-mark-close {
+            font-size: clamp(40px, 8vw, 80px);
+            line-height: 1;
+        }
+        .quote-mark-open {
+            align-self: flex-start;
+            margin-top: 6px;
+        }
+        .quote-mark-close {
+            align-self: flex-end;
+            margin-bottom: -20px;
+        }
+        .quote-text {
+            font-size: clamp(14px, 2vw, 20px);
+            line-height: 1.6;
+            max-width: 80%;
+        }
+        .changelog-box {
+            width: 65vw;
+            height: 25vh;
+            border: 2px solid var(--black);
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        .changelog-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--black);
+            letter-spacing: 0.06em;
+            padding: 6px 12px 5px;
+            border-bottom: 1.5px solid rgba(0, 0, 0, 0.18);
+            display: block;
+            text-transform: lowercase;
+        }
+        .changelog-inner {
+            padding: 8px 14px 10px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .changelog-line {
+            font-size: clamp(10px, 1vw, 12px);
+            color: var(--black);
+            line-height: 1.75;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.32s, transform 0.32s;
+        }
+        .changelog-line.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .changelog-cursor {
+            display: inline-block;
+            width: 7px;
+            height: 12px;
+            background: var(--black);
+            vertical-align: middle;
+            animation: blink 0.7s step-end infinite;
+            margin-left: 2px;
+        }
+        .changelog-inner::-webkit-scrollbar {
+            width: 10px;
+        }
+        .changelog-inner::-webkit-scrollbar-track {
+            background: var(--gold);
+        }
+        .changelog-inner::-webkit-scrollbar-thumb {
+            background: var(--black);
+            border-radius: 2px;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .progress-ring-wrap {
+            position: relative;
+            width: 88px;
+            height: 88px;
+            margin-bottom: 16px;
+        }
+        .progress-ring-wrap svg {
+            transform: rotate(-90deg);
+        }
+        .ring-bg {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.15);
+            stroke-width: 6;
+        }
+        .ring-fill {
+            fill: none;
+            stroke: var(--black);
+            stroke-width: 6;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.4s ease;
+        }
+        .progress-pct {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--black);
+        }
+        .status-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .fetching-label {
+            font-family: 'Source Serif 4', serif;
+            font-size: clamp(12px, 1.2vw, 15px);
+            color: var(--black);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-align: center;
+        }
+        .fetching-label.error-text {
+            color: var(--error);
+        }
+        .next-btn {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.3s ease;
+            padding: 10px 18px;
+            border: 2px solid var(--black);
+            border-radius: 99px;
+            background: transparent;
+            color: var(--black);
+            text-decoration: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .next-btn:hover {
+            opacity: 0.85;
+            transform: translateX(3px);
+        }
+        .next-btn svg {
+            flex-shrink: 0;
+        }
+        .next-btn.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -45,7 +267,7 @@
             </div>
         </div>
         <div class="progress-ring-wrap">
-            //src: chatgpt
+            <!-- src: chatgpt -->
             <svg width="88" height="88" viewBox="0 0 88 88">
                 <circle class="ring-bg"	cx="44" cy="44" r="38"/>
                 <circle class="ring-fill" id="ringFill" cx="44" cy="44" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
@@ -59,7 +281,7 @@
                 Please wait, fetching is in progress...
             </span>
             <a class="next-btn" id="nextBtn" href="menulist_page.html">
-                //src: chatgpt
+                <!-- src: chatgpt -->
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"/>
                     <polyline points="12 5 19 12 12 19"/>
